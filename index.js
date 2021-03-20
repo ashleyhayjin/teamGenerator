@@ -1,8 +1,11 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
 const chalk = require("chalk");
-
-
+const Manager = require('./lib/Manager');
+const Engineer = require('./lib/Engineer');
+const Intern = require('./lib/Intern');
+const templateFile = require("./src/template");
+let team = [];
 
 function start () {
     inquirer.prompt([
@@ -41,8 +44,9 @@ function start () {
                     message: "What is the manager's office number?"
                 }
             )
-        .then(function (managerResponse) {
-            console.log("New Manager");
+        .then(function (managerRes) {
+            const newManager = new Manager(res.name, res.id, res.email, managerRes.officeNum);
+            team.push(newManager);
             moreMembers();
         })}
 
@@ -54,7 +58,9 @@ function start () {
                     message: "What is the github account username?"
                 }
             )
-        .then(function (engineerResponse) {
+        .then(function (engineerRes) {
+            const newEngineer = new Engineer(res.name, res.id, res.email, engineerRes.github);
+            team.push(newEngineer);
             console.log("New Engineer");
             moreMembers();    
         })}
@@ -67,7 +73,9 @@ function start () {
                     message: "What is the school name?"
                 }
             )
-        .then(function (internResponse) {
+        .then(function (internRes) {
+            const newIntern = new Intern(res.name, res.id, res.email, internRes.school);
+            team.push(newIntern);
             console.log("New Intern");
             moreMembers();   
         })} 
@@ -95,6 +103,8 @@ function moreMembers (){
     } 
     else {
         console.log("No more members.");
+        let practiceDiv = templateFile(team);
+        fs.writeFileSync("index.html", practiceDiv, "utf-8");
     }})
 
 }
