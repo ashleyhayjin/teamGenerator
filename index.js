@@ -40,12 +40,12 @@ function start () {
             inquirer.prompt(
                 {
                     type: 'input',
-                    name: 'officeNum',
+                    name: 'officeNumber',
                     message: "What is the manager's office number?"
                 }
             )
         .then(function (managerRes) {
-            const newManager = new Manager(res.name, res.id, res.email, managerRes.officeNum);
+            const newManager = new Manager(res.name, res.id, res.email, managerRes.officeNumber);
             team.push(newManager);
             moreMembers();
         })}
@@ -74,8 +74,8 @@ function start () {
                 }
             )
         .then(function (internRes) {
-            const intern = new Intern(res.name, res.id, res.email, internRes.school);
-            team.push(intern);
+            const newIntern = new Intern(res.name, res.id, res.email, internRes.school);
+            team.push(newIntern);
             console.log("New Intern");
             moreMembers();   
         })} 
@@ -102,7 +102,8 @@ function moreMembers (){
     start();            
     } 
     else {
-        console.log("No more members.");
+        console.log(team);
+        writeHtml(team);
     }})
 
 }
@@ -110,7 +111,7 @@ function moreMembers (){
 
 start();
 
-function writeHtml (team){
+function writeHtml (){
     const htmlData = [];
     const htmlOpening =`<!DOCTYPE html>
     <html lang="en">
@@ -118,43 +119,42 @@ function writeHtml (team){
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>Team Builder</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     </head>
     <body>`
     
     htmlData.push(htmlOpening);
 
-    for(i=0; i < team.length; i++){
+    for(let i=0; i < team.length; i++){
         let htmlFile = `<div class="card" style="width: 15rem;">
         <img src='https://dummyimage.com/25x25.png' alt=''/>
         <div class="card-body">
-          <h2> class="card-title">${team[i].typeOfRole}</h2>
-            <h4>${team[i].name}</h4>
-            <h4>${team[i].id}</h4>
-            <h4>${team[i].email}</h4>`;
-
+          <h2 class="card-title">${team[i].getRole()}</h2>
+            <h4>Name: ${team[i].name}</h4>
+            <h4>ID: ${team[i].id}</h4>
+            <h4>Email: <a href="mailto:${team[i].email}">${team[i].email}</a></h4>`;
 
           if(team[i].officeNum){
-            htmlFile+= `<h4>${team[i].officeNum}</h4> 
+            htmlFile+= `<h4>$Office Number: {team[i].officeNumber}</h4> 
             </div>`;
-            htmlData.push(htmlFile);
           }
           if(team[i].github){
-            htmlFile+= `<h4>${team[i].github}</h4> 
+            htmlFile+= `<h4>Github Username: <a href="http://github.com/${team[i].github}">${team[i].github}</a></h4> 
             </div>`;
-            htmlData.push(htmlFile);
 
           }  
           if(team[i].school){
-            htmlFile += `<h4>${team[i].officeNum}</h4> 
+            htmlFile += `<h4>School: ${team[i].school}</h4> 
             </div>`
-            htmlData.push(htmlFile);
           }
 
+        htmlData.push(htmlFile);
         
     }
     const closingBody = `</body></html>`;
     htmlData.push(closingBody);
     console.log(htmlData);
+    fs.writeFileSync("index.html", htmlData.join(""));
 }
 
