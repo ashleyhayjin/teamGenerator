@@ -4,7 +4,7 @@ const chalk = require("chalk");
 const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
-const templateFile = require("./src/template");
+// const templateFile = require("./src/template");
 let team = [];
 
 function start () {
@@ -74,8 +74,8 @@ function start () {
                 }
             )
         .then(function (internRes) {
-            const newIntern = new Intern(res.name, res.id, res.email, internRes.school);
-            team.push(newIntern);
+            const intern = new Intern(res.name, res.id, res.email, internRes.school);
+            team.push(intern);
             console.log("New Intern");
             moreMembers();   
         })} 
@@ -103,11 +103,58 @@ function moreMembers (){
     } 
     else {
         console.log("No more members.");
-        let practiceDiv = templateFile(team);
-        fs.writeFileSync("index.html", practiceDiv, "utf-8");
     }})
 
 }
 
 
 start();
+
+function writeHtml (team){
+    const htmlData = [];
+    const htmlOpening =`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>`
+    
+    htmlData.push(htmlOpening);
+
+    for(i=0; i < team.length; i++){
+        let htmlFile = `<div class="card" style="width: 15rem;">
+        <img src='https://dummyimage.com/25x25.png' alt=''/>
+        <div class="card-body">
+          <h2> class="card-title">${team[i].typeOfRole}</h2>
+            <h4>${team[i].name}</h4>
+            <h4>${team[i].id}</h4>
+            <h4>${team[i].email}</h4>`;
+
+
+          if(team[i].officeNum){
+            htmlFile+= `<h4>${team[i].officeNum}</h4> 
+            </div>`;
+            htmlData.push(htmlFile);
+          }
+          if(team[i].github){
+            htmlFile+= `<h4>${team[i].github}</h4> 
+            </div>`;
+            htmlData.push(htmlFile);
+
+          }  
+          if(team[i].school){
+            htmlFile += `<h4>${team[i].officeNum}</h4> 
+            </div>`
+            htmlData.push(htmlFile);
+          }
+
+        
+    }
+    const closingBody = `</body></html>`;
+    htmlData.push(closingBody);
+    console.log(htmlData);
+}
+
